@@ -1,13 +1,16 @@
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+import 'lazysizes';
 // Add imports above this line
 import { galleryItems } from './gallery-items';
 // Change code below this line
-
-console.log(galleryItems);
 
 const galleryListEl = document.querySelector('ul.gallery');
 const galleryMarkup = createGalleryMarkup(galleryItems).join('');
 
 galleryListEl.insertAdjacentHTML('beforeend', galleryMarkup);
+
+lazyImagesBrowserDetection();
 
 const lightBoxGallery = new SimpleLightbox('ul.gallery li a', {
   captionsData: 'alt',
@@ -21,7 +24,7 @@ function createGalleryMarkup(photos) {
   <a class="gallery__link" href="${original}">
     <img
 		loading="lazy"
-      class="gallery__image lazyload"
+      class="gallery__image"
       data-src="${preview}"
       alt="${description}"
     />
@@ -31,19 +34,14 @@ function createGalleryMarkup(photos) {
   });
 }
 
-if ('loading' in HTMLImageElement.prototype) {
+function lazyImagesBrowserDetection() {
   const lazyImages = document.querySelectorAll('[loading="lazy"]');
 
   lazyImages.forEach(image => {
-    image.src = image.dataset.src;
+    if ('loading' in HTMLImageElement.prototype) {
+      image.src = image.dataset.src;
+    } else {
+      image.classList.add('lazyload');
+    }
   });
-} else {
-  const lazySizesScript = document.createElement('script');
-  lazySizesScript.src =
-    'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
-  lazySizesScript.integrity =
-    'sha512-q583ppKrCRc7N5O0n2nzUiJ+suUv7Et1JGels4bXOaMFQcamPk9HjdUknZuuFjBNs7tsMuadge5k9RzdmO+1GQ==';
-  lazySizesScript.crossOrigin = 'anonymous';
-  lazySizesScript.referrerPolicy = 'no-referrer';
-  document.body.appendChild(lazySizesScript);
 }
