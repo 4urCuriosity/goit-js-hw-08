@@ -41,8 +41,7 @@ function lazyImagesBrowserDetection() {
     if ('loading' in HTMLImageElement.prototype) {
       image.src = image.dataset.src;
     } else {
-      // image.classList.add('lazyload');
-      console.log('Ленивая загрузка не работает на сафари');
+      image.classList.add('lazyload');
     }
   });
 }
