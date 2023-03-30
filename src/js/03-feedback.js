@@ -12,7 +12,7 @@ const LOCALSTORAGE_KEY = 'feedback-form-state';
 populateFormInputs();
 
 refs.form.addEventListener('input', throttle(onFormInput, 500));
-refs.submitBtn.addEventListener('click', throttle(onSubmitBtnClick, 500));
+refs.submitBtn.addEventListener('click', onSubmitBtnClick);
 
 function onFormInput(e) {
   const inputName = e.target.name;
@@ -25,9 +25,52 @@ function onFormInput(e) {
 }
 
 function onSubmitBtnClick(e) {
+  const errorSet = new Set();
+
   e.preventDefault();
-  refs.form.reset();
-  localStorage.removeItem(LOCALSTORAGE_KEY);
+
+  validateInputs(errorSet);
+
+  if (errorSet.size === 0) {
+    refs.form.reset();
+    localStorage.removeItem(LOCALSTORAGE_KEY);
+  }
+}
+
+function validateInputs(errorSet) {
+  emailValidate(errorSet);
+  textareaValidate(errorSet);
+}
+
+function emailValidate(errorSet) {
+  const emailValue = refs.emailInput.value.trim();
+
+  if (emailValue === '') {
+    refs.emailInput.classList.add('error');
+    errorSet.add(refs.emailInput.name);
+  } else if (!isEmail(emailValue)) {
+    refs.emailInput.classList.add('error');
+    errorSet.add(refs.emailInput.name);
+  } else if (refs.emailInput.classList.value.includes('error')) {
+    refs.emailInput.classList.remove('error');
+  }
+}
+
+function isEmail(email) {
+  return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+    email
+  );
+}
+
+function textareaValidate(errorSet) {
+  const textareaValue = refs.textarea.value.trim();
+
+  if (textareaValue === '') {
+    refs.textarea.classList.add('error');
+    errorSet.add(refs.textarea.name);
+  } else if (refs.textarea.classList.value.includes('error')) {
+    refs.textarea.classList.remove('error');
+  }
 }
 
 function populateFormInputs() {
